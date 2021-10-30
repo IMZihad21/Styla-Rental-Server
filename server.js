@@ -21,11 +21,27 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const dbConnect = async () => {
     try {
         await client.connect();
+        const stylaDB = client.db("stylaRental");
+
+        // GET API
+        app.get('/banner', async (req, res) => {
+            const bannerIMG = stylaDB.collection('bannerIMG')
+            const cursor = bannerIMG.find({});
+            if ((await cursor.count()) === 0) {
+                res.send([]);
+            }
+            else {
+                const products = await cursor.toArray();
+                res.json(products);
+            }
+        })
     }
     finally {
         console.log('Connection to MongoDB successfull');
     }
 }
+
+dbConnect();
 
 app.get('/', (req, res) => {
     res.send('API for Styla Rental App is LIVE!')
