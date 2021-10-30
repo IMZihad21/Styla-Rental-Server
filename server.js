@@ -21,12 +21,14 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const dbConnect = async () => {
     try {
         await client.connect();
-        const stylaDB = client.db("stylaRental");
+        const stylaRentals = client.db("stylaRental");
+        const bannerDB = stylaRentals.collection('banner');
+        const dressesDB = stylaRentals.collection('dresses');
+        const cartDB = stylaRentals.collection('cart');
 
         // GET API
         app.get('/banner', async (req, res) => {
-            const bannerIMG = stylaDB.collection('banner');
-            const cursor = bannerIMG.find({});
+            const cursor = bannerDB.find({});
             if ((await cursor.count()) === 0) {
                 res.send([]);
             }
@@ -37,7 +39,6 @@ const dbConnect = async () => {
         });
 
         app.get('/dresses', async (req, res) => {
-            const dressesDB = stylaDB.collection('dresses');
             const cursor = dressesDB.find({});
             if ((await cursor.count()) === 0) {
                 res.send([]);
@@ -48,13 +49,43 @@ const dbConnect = async () => {
             }
         });
 
+        app.get('/dress/:dressID', async (req, res) => {
+            const dressID = req.params.dressID;
+            const query = { _id: ObjectId(dressID) };
+            const dress = await dressesDB.findOne(query);
+            res.json(dress);
+        });
+
+        app.get('/cart/:userID', async (req, res) => {
+            const userID = req.params.userID;
+            const query = { userID };
+            const data = await cartDB.findOne(query);
+            if (data) {
+                res.json(data.cart);
+            }
+            else{
+                res.json([])
+            }
+        });
+
         // POST API
         app.post('/dresses', async (req, res) => {
-            const dressesDB = stylaDB.collection('dresses');
-            const data = req.body;
-            const result = await dressesDB.insertOne(data);
+            const result = await dressesDB.insertOne(req.body);
             res.send(result);
+        });
 
+        // PUT API
+        app.put('/cart', async (req, res) => {
+            const { userID, cart } = req.body;
+            const filter = { userID: userID };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    cart: cart
+                },
+            };
+            const result = await cartDB.updateOne(filter, updateDoc, options);
+            res.send(result);
         });
     }
     finally {
