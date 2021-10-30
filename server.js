@@ -25,7 +25,7 @@ const dbConnect = async () => {
 
         // GET API
         app.get('/banner', async (req, res) => {
-            const bannerIMG = stylaDB.collection('bannerIMG');
+            const bannerIMG = stylaDB.collection('banner');
             const cursor = bannerIMG.find({});
             if ((await cursor.count()) === 0) {
                 res.send([]);
