@@ -25,7 +25,7 @@ const dbConnect = async () => {
 
         // GET API
         app.get('/banner', async (req, res) => {
-            const bannerIMG = stylaDB.collection('bannerIMG')
+            const bannerIMG = stylaDB.collection('bannerIMG');
             const cursor = bannerIMG.find({});
             if ((await cursor.count()) === 0) {
                 res.send([]);
@@ -34,7 +34,28 @@ const dbConnect = async () => {
                 const products = await cursor.toArray();
                 res.json(products);
             }
-        })
+        });
+
+        app.get('/dresses', async (req, res) => {
+            const dressesDB = stylaDB.collection('dresses');
+            const cursor = dressesDB.find({});
+            if ((await cursor.count()) === 0) {
+                res.send([]);
+            }
+            else {
+                const products = await cursor.toArray();
+                res.json(products);
+            }
+        });
+
+        // POST API
+        app.post('/dresses', async (req, res) => {
+            const dressesDB = stylaDB.collection('dresses');
+            const data = req.body;
+            const result = await dressesDB.insertOne(data);
+            res.send(result);
+
+        });
     }
     finally {
         console.log('Connection to MongoDB successfull');
