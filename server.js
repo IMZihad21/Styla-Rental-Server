@@ -9,7 +9,7 @@ const app = express();
 dotenv.config();
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: true }));
 app.use(express.json());
 
 // Read from ENV
@@ -93,6 +93,11 @@ const dbConnect = async () => {
             const updateDoc = { $set: { cart, order } };
             const result = await cartDB.updateOne(filter, updateDoc, options);
             res.send(result);
+        });
+
+        // DELETE API
+        app.delete('/order', async (req, res) => {
+
         });
     }
     finally {
