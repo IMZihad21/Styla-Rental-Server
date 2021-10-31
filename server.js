@@ -49,7 +49,7 @@ const dbConnect = async () => {
             }
         });
 
-        app.get('/cart', async (req, res) => {
+        app.get('/cart/all', async (req, res) => {
             const cursor = cartDB.find({});
             if ((await cursor.count()) === 0) {
                 res.send([]);
@@ -72,7 +72,7 @@ const dbConnect = async () => {
             const query = { userID };
             const data = await cartDB.findOne(query);
             if (data) {
-                res.json(data.cart);
+                res.json(data);
             }
             else {
                 res.json([])
@@ -87,14 +87,10 @@ const dbConnect = async () => {
 
         // PUT API
         app.put('/cart', async (req, res) => {
-            const { userID, cart } = req.body;
+            const { userID, cart, order } = req.body;
             const filter = { userID: userID };
             const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    cart: cart
-                },
-            };
+            const updateDoc = { $set: { cart, order } };
             const result = await cartDB.updateOne(filter, updateDoc, options);
             res.send(result);
         });
