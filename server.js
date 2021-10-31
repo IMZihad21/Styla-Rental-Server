@@ -95,9 +95,26 @@ const dbConnect = async () => {
             res.send(result);
         });
 
-        // DELETE API
-        app.delete('/order', async (req, res) => {
+        app.put('/order', async (req, res) => {
+            const { userID, productID } = req.body;
+            const { order } = await cartDB.findOne({ userID });
+            const updatedOrder = order.filter(element => element._id !== productID);
+            const filter = { userID: userID };
+            const updateDoc = { $set: { order: updatedOrder } };
+            const result = await cartDB.updateOne(filter, updateDoc);
+            res.send(result);
+        });
 
+        app.put('/order/authorize', async (req, res) => {
+            const { userID, _id } = req.body;
+            const { order } = await cartDB.findOne({ userID });
+            const updatedOrder = order.map(obj =>
+                obj._id === _id ? { ...obj, pending: false } : obj
+            );
+            const filter = { userID: userID };
+            const updateDoc = { $set: { order: updatedOrder } };
+            const result = await cartDB.updateOne(filter, updateDoc);
+            res.send(result);
         });
     }
     finally {
