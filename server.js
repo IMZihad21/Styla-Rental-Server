@@ -49,6 +49,17 @@ const dbConnect = async () => {
             }
         });
 
+        app.get('/cart', async (req, res) => {
+            const cursor = cartDB.find({});
+            if ((await cursor.count()) === 0) {
+                res.send([]);
+            }
+            else {
+                const products = await cursor.toArray();
+                res.json(products);
+            }
+        });
+
         app.get('/dress/:dressID', async (req, res) => {
             const dressID = req.params.dressID;
             const query = { _id: ObjectId(dressID) };
@@ -63,7 +74,7 @@ const dbConnect = async () => {
             if (data) {
                 res.json(data.cart);
             }
-            else{
+            else {
                 res.json([])
             }
         });
