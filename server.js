@@ -22,22 +22,10 @@ const dbConnect = async () => {
     try {
         await client.connect();
         const stylaRentals = client.db("stylaRental");
-        const bannerDB = stylaRentals.collection('banner');
         const dressesDB = stylaRentals.collection('dresses');
         const cartDB = stylaRentals.collection('cart');
 
         // GET API
-        app.get('/banner', async (req, res) => {
-            const cursor = bannerDB.find({});
-            if ((await cursor.count()) === 0) {
-                res.send([]);
-            }
-            else {
-                const products = await cursor.toArray();
-                res.json(products);
-            }
-        });
-
         app.get('/dresses', async (req, res) => {
             const cursor = dressesDB.find({});
             if ((await cursor.count()) === 0) {
