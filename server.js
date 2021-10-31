@@ -9,7 +9,7 @@ const app = express();
 dotenv.config();
 
 // Middleware
-app.use(cors({ origin: true }));
+app.use(cors());
 app.use(express.json());
 
 // Read from ENV
